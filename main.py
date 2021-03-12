@@ -1,5 +1,6 @@
 import pygame,sys
 from pygame.locals import *
+from square import Square
 
 pygame.init()
 
@@ -9,8 +10,30 @@ BLOCK_SIZE = 20
 #colors
 WHITE = (255,255,255)
 BLACK = (0,0,0)
+RED = (255,0,0)
 
-            
+
+grid_list = []
+def draw_grid():
+    for x in range(WINDOW_SIZE[0]):
+        for y in range(WINDOW_SIZE[1]):
+            rect = pygame.Rect(x * BLOCK_SIZE,y * BLOCK_SIZE,BLOCK_SIZE,BLOCK_SIZE)
+            grid_list.append(Square(rect))
+            pygame.draw.rect(window,BLACK,rect,1,2)
+
+def set_pos(x,y):
+    return (x*BLOCK_SIZE,y* BLOCK_SIZE)
+
+def get_objective_distance(actual,objective):
+    return (objective[0] - actual[0]) + (objective[1] - actual[1])
+
+def gen_objective_distance():
+    for sqr in grid_list:
+        sqr.objective_distance = get_objective_distance((sqr.rect.x,sqr.rect.y),objective_pos)
+
+objective_pos = set_pos(28,12)
+objective_rect = pygame.Rect(objective_pos[0],objective_pos[1],BLOCK_SIZE,BLOCK_SIZE)
+
 def main():
 
     global window
@@ -19,10 +42,13 @@ def main():
 
     window.fill(WHITE)
     draw_grid()
+    gen_objective_distance()
+
+    pygame.draw.rect(window,RED,objective_rect)
 
     fps = pygame.time.Clock()
-
     loop = True
+
     while loop:
         
 
@@ -35,13 +61,7 @@ def main():
         
         pygame.display.update()
         fps.tick(60)
-
-def draw_grid():
-    for x in range(WINDOW_SIZE[0]):
-        for y in range(WINDOW_SIZE[1]):
-            rect = pygame.Rect(x * BLOCK_SIZE,y * BLOCK_SIZE,BLOCK_SIZE,BLOCK_SIZE)
-            pygame.draw.rect(window,BLACK,rect,1,2)
-
+    
 
 main()
 
