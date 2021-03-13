@@ -1,6 +1,7 @@
-import pygame,sys
+import pygame,sys,numpy
 from pygame.locals import *
 from square import Square
+from adjacent import Adjacent
 
 pygame.init()
 
@@ -13,16 +14,22 @@ BLACK = (0,0,0)
 RED = (255,0,0)
 
 
-grid_list = []
+grid_list = numpy.empty(shape=[24,32],dtype=object)
+
 def draw_grid():
-    for rect in grid_list:
-            pygame.draw.rect(window,BLACK,rect,1,2)
+    for line in grid_list:
+        for sqr in line:
+            pygame.draw.rect(window,BLACK,sqr,1,2)
 
 def gen_rects():
-    for x in range(WINDOW_SIZE[0]):
-        for y in range(WINDOW_SIZE[1]):
-            rect = pygame.Rect(x * BLOCK_SIZE,y * BLOCK_SIZE,BLOCK_SIZE,BLOCK_SIZE)
-            grid_list.append(Square(rect))
+    i=0
+    for x in range(0,WINDOW_SIZE[0],20):
+        j=0
+        for y in range(0,WINDOW_SIZE[1],20):
+            rect = pygame.Rect(x,y,BLOCK_SIZE,BLOCK_SIZE)
+            grid_list[j][i] = Square(rect)
+            j+=1
+        i+=1
 
 def set_pos(x,y):
     return (x*BLOCK_SIZE,y* BLOCK_SIZE)
@@ -31,8 +38,10 @@ def get_objective_distance(actual,objective):
     return (objective[0] - actual[0]) + (objective[1] - actual[1])
 
 def gen_objective_distance():
-    for sqr in grid_list:
-        sqr.objective_distance = get_objective_distance((sqr.rect.x,sqr.rect.y),objective_pos)
+    for line in grid_list:
+        for sqr in line:
+            sqr.objective_distance = get_objective_distance((sqr.rect.x,sqr.rect.y),objective_pos)
+
 
 objective_pos = set_pos(28,12)
 objective_rect = pygame.Rect(objective_pos[0],objective_pos[1],BLOCK_SIZE,BLOCK_SIZE)
