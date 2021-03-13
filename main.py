@@ -15,11 +15,14 @@ RED = (255,0,0)
 
 grid_list = []
 def draw_grid():
+    for rect in grid_list:
+            pygame.draw.rect(window,BLACK,rect,1,2)
+
+def gen_rects():
     for x in range(WINDOW_SIZE[0]):
         for y in range(WINDOW_SIZE[1]):
             rect = pygame.Rect(x * BLOCK_SIZE,y * BLOCK_SIZE,BLOCK_SIZE,BLOCK_SIZE)
             grid_list.append(Square(rect))
-            pygame.draw.rect(window,BLACK,rect,1,2)
 
 def set_pos(x,y):
     return (x*BLOCK_SIZE,y* BLOCK_SIZE)
@@ -41,6 +44,7 @@ def main():
     pygame.display.set_caption("A* Pathfinding")
 
     window.fill(WHITE)
+    gen_rects()
     draw_grid()
     gen_objective_distance()
 
