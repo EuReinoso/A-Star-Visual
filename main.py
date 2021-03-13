@@ -42,6 +42,21 @@ def gen_objective_distance():
         for sqr in line:
             sqr.objective_distance = get_objective_distance((sqr.rect.x,sqr.rect.y),objective_pos)
 
+def gen_adjacents():
+    i=0
+    for line in grid_list:
+        j=0
+        for sqr in line:
+            if j < len(line) -1:
+                sqr.add_adjacent(Adjacent(grid_list[i][j+1]))
+            if j > 0:
+                sqr.add_adjacent(Adjacent(grid_list[i][j-1]))
+            if i < len(grid_list) -1:
+                sqr.add_adjacent(Adjacent(grid_list[i+1][j]))
+            if i > 0:
+                sqr.add_adjacent(Adjacent(grid_list[i-1][j]))
+            j+=1
+        i+=1
 
 objective_pos = set_pos(28,12)
 objective_rect = pygame.Rect(objective_pos[0],objective_pos[1],BLOCK_SIZE,BLOCK_SIZE)
@@ -54,8 +69,10 @@ def main():
 
     window.fill(WHITE)
     gen_rects()
-    draw_grid()
     gen_objective_distance()
+    gen_adjacents()
+    draw_grid()
+    
 
     pygame.draw.rect(window,RED,objective_rect)
 
