@@ -28,6 +28,8 @@ def draw_grid():
                 pygame.draw.rect(window,BLACK,sqr.rect,1,2)
             if sqr.visited == True:
                 pygame.draw.rect(window,GREEN,sqr.rect)
+            if sqr.is_wall:
+                pygame.draw.rect(window,BLACK,sqr.rect)
 
 def gen_rects():
     i=0
@@ -80,12 +82,13 @@ def main():
     gen_rects()
     gen_objective_distance()
     gen_adjacents()
-    astar = AStar(grid_list[0][0],grid_list[12][28])
+    astar = AStar(grid_list[3][5],grid_list[12][28])
     
 
     pygame.draw.rect(window,RED,objective_rect)
 
     loop = True
+    start = False
 
     while loop:
         
@@ -95,10 +98,15 @@ def main():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+                
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    start = True
 
-        if astar.found == False:
-            astar.seach()
-        
+        if start:
+            if astar.found == False:
+                astar.seach()
+            
         draw_grid()
 
         for actual in astar.actual_list:
