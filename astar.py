@@ -23,7 +23,7 @@ class AStar:
                     self.actual = self.objective
                     return
                 else:
-                    if adj.square.visited == False:
+                    if adj.square.visited == False and adj.square.is_wall == False:
                         adj.square.visited = True
                         adj_list.insert(adj)
                 
