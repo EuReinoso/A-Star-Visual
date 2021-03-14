@@ -21,16 +21,23 @@ fps = pygame.time.Clock()
 
 grid_list = numpy.empty(shape=[24,32],dtype=object)
 
+w = WINDOW_SIZE[0]//len(grid_list[0])
+h = WINDOW_SIZE[1]//len(grid_list)
+
+def click_wall(pos,state):
+    i = pos[1]//w
+    j = pos[0]//h
+    grid_list[i][j].is_wall = state
+
 def draw_grid():
     for line in grid_list:
         for sqr in line:
-            if sqr.visited == False:
-                pygame.draw.rect(window,BLACK,sqr.rect,1,2)
             if sqr.visited == True:
                 pygame.draw.rect(window,GREEN,sqr.rect)
             if sqr.is_wall:
                 pygame.draw.rect(window,BLACK,sqr.rect)
-
+            else:
+                pygame.draw.rect(window,BLACK,sqr.rect,1,2)
 def gen_rects():
     i=0
     for x in range(0,WINDOW_SIZE[0],20):
@@ -75,7 +82,7 @@ def main():
     window = pygame.display.set_mode(WINDOW_SIZE)
     pygame.display.set_caption("A* Pathfinding")
 
-    window.fill(WHITE)
+    
     gen_rects()
 
     origin = grid_list[3][5]
@@ -84,18 +91,16 @@ def main():
     gen_objective_distance()
     gen_adjacents()
     
-    
-
     astar = AStar(origin,objective)
 
-    pygame.draw.rect(window,RED,objective.rect)
-    pygame.draw.rect(window,GREEN,origin.rect)
+    
 
     loop = True
     start = False
 
+    vel = 30
     while loop:
-        
+        window.fill(WHITE)
 
         #events
         for event in pygame.event.get():
@@ -106,11 +111,24 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     start = True
+            if event.type == pygame.MOUSEBUTTONUP:
+                if pygame.mouse.get_pressed(3)[0]:
+                    click_wall(pygame.mouse.get_pos(),True)
+                if pygame.mouse.get_pressed(3)[2]:
+                    click_wall(pygame.mouse.get_pos(),False)
+            if event.type == pygame.MOUSEMOTION:
+                if pygame.mouse.get_pressed(3)[0]:
+                    click_wall(pygame.mouse.get_pos(),True)
+                if pygame.mouse.get_pressed(3)[2]:
+                    click_wall(pygame.mouse.get_pos(),False)
 
         if start:
+            vel = 5
             if astar.found == False:
                 astar.seach()
-            
+                
+        pygame.draw.rect(window,RED,objective.rect)
+        pygame.draw.rect(window,GREEN,origin.rect)
         draw_grid()
 
         for actual in astar.actual_list:
@@ -118,7 +136,7 @@ def main():
 
         
         pygame.display.update()
-        fps.tick(5)
+        fps.tick(vel)
     
 main()
 
