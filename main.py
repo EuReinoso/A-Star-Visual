@@ -50,7 +50,7 @@ def get_objective_distance(actual,objective):
 def gen_objective_distance():
     for line in grid_list:
         for sqr in line:
-            sqr.objective_distance = get_objective_distance((sqr.rect.x,sqr.rect.y),objective_pos)
+            sqr.objective_distance = get_objective_distance((sqr.rect.x,sqr.rect.y),(objective.rect.x,objective.rect.y))
 
 def gen_adjacents():
     i=0
@@ -68,24 +68,28 @@ def gen_adjacents():
             j+=1
         i+=1
 
-objective_pos = set_pos(28,12)
-objective_rect = pygame.Rect(objective_pos[0],objective_pos[1],BLOCK_SIZE,BLOCK_SIZE)
-
 
 def main():
 
-    global window,fps
+    global window,origin,objective
     window = pygame.display.set_mode(WINDOW_SIZE)
     pygame.display.set_caption("A* Pathfinding")
 
     window.fill(WHITE)
     gen_rects()
+
+    origin = grid_list[3][5]
+    objective = grid_list[12][28]
+
     gen_objective_distance()
     gen_adjacents()
-    astar = AStar(grid_list[3][5],grid_list[12][28])
+    
     
 
-    pygame.draw.rect(window,RED,objective_rect)
+    astar = AStar(origin,objective)
+
+    pygame.draw.rect(window,RED,objective.rect)
+    pygame.draw.rect(window,GREEN,origin.rect)
 
     loop = True
     start = False
@@ -98,7 +102,7 @@ def main():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-                
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     start = True
