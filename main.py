@@ -1,7 +1,9 @@
-import pygame,sys,numpy
+import pygame,sys,numpy,math
 from pygame.locals import *
 from square import Square
 from adjacent import Adjacent
+from orderedVector import OrderedVector
+from astar import AStar
 
 pygame.init()
 
@@ -11,15 +13,21 @@ BLOCK_SIZE = 20
 #colors
 WHITE = (255,255,255)
 BLACK = (0,0,0)
-RED = (255,0,0)
+RED = (200,0,0)
+GREEN = (0,200,0)
+BLUE = (50,100,200)
 
+fps = pygame.time.Clock()
 
 grid_list = numpy.empty(shape=[24,32],dtype=object)
 
 def draw_grid():
     for line in grid_list:
         for sqr in line:
-            pygame.draw.rect(window,BLACK,sqr,1,2)
+            if sqr.visited == False:
+                pygame.draw.rect(window,BLACK,sqr.rect,1,2)
+            if sqr.visited == True:
+                pygame.draw.rect(window,GREEN,sqr.rect)
 
 def gen_rects():
     i=0
@@ -35,7 +43,7 @@ def set_pos(x,y):
     return (x*BLOCK_SIZE,y* BLOCK_SIZE)
 
 def get_objective_distance(actual,objective):
-    return (objective[0] - actual[0]) + (objective[1] - actual[1])
+    return math.sqrt(((objective[0] - actual[0]))**2 + abs((objective[1] - actual[1]))**2)
 
 def gen_objective_distance():
     for line in grid_list:
@@ -61,9 +69,10 @@ def gen_adjacents():
 objective_pos = set_pos(28,12)
 objective_rect = pygame.Rect(objective_pos[0],objective_pos[1],BLOCK_SIZE,BLOCK_SIZE)
 
+
 def main():
 
-    global window
+    global window,fps
     window = pygame.display.set_mode(WINDOW_SIZE)
     pygame.display.set_caption("A* Pathfinding")
 
@@ -71,12 +80,11 @@ def main():
     gen_rects()
     gen_objective_distance()
     gen_adjacents()
-    draw_grid()
+    astar = AStar(grid_list[0][0],grid_list[12][28])
     
 
     pygame.draw.rect(window,RED,objective_rect)
 
-    fps = pygame.time.Clock()
     loop = True
 
     while loop:
@@ -87,11 +95,18 @@ def main():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+
+        if astar.found == False:
+            astar.seach()
         
+        draw_grid()
+
+        for actual in astar.actual_list:
+            pygame.draw.rect(window,BLUE,actual.rect)
+
         
         pygame.display.update()
-        fps.tick(60)
+        fps.tick(5)
     
-
 main()
 

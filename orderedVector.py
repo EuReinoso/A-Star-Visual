@@ -1,6 +1,4 @@
 import numpy
-from square import Square
-from adjacent import Adjacent
 
 class OrderedVector:
     def __init__(self,size):
