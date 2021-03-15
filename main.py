@@ -36,8 +36,11 @@ def draw_grid():
                 pygame.draw.rect(window,GREEN,sqr.rect)
             if sqr.is_wall:
                 pygame.draw.rect(window,BLACK,sqr.rect)
+            if sqr == astar.actual:
+                pygame.draw.rect(window,BLUE,sqr.rect)
             else:
                 pygame.draw.rect(window,BLACK,sqr.rect,1,2)
+
 def gen_rects():
     i=0
     for x in range(0,WINDOW_SIZE[0],20):
@@ -78,7 +81,7 @@ def gen_adjacents():
 
 def main():
 
-    global window,origin,objective
+    global window,origin,objective,astar
     window = pygame.display.set_mode(WINDOW_SIZE)
     pygame.display.set_caption("A* Pathfinding")
 
@@ -126,14 +129,10 @@ def main():
             vel = 5
             if astar.found == False:
                 astar.seach()
-                
+
         pygame.draw.rect(window,RED,objective.rect)
         pygame.draw.rect(window,GREEN,origin.rect)
         draw_grid()
-
-        for actual in astar.actual_list:
-            pygame.draw.rect(window,BLUE,actual.rect)
-
         
         pygame.display.update()
         fps.tick(vel)

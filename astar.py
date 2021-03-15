@@ -6,12 +6,13 @@ class AStar:
         self.objective = objective
         self.found = False
         self.actual = actual
-        self.actual_list = []
+        self.visited_list = []
+        self.prev = objective
 
     def seach(self):
         print(self.actual.objective_distance)
         self.actual.visited = True
-        self.actual_list.append(self.actual)
+        
 
         if self.actual == self.objective:
             print("Found")
@@ -23,11 +24,26 @@ class AStar:
                     self.actual = self.objective
                     return
                 else:
-                    if adj.square.visited == False and adj.square.is_wall == False:
+                    if adj.square.is_wall == False and not adj.square.visited:
                         adj.square.visited = True
-                        adj_list.insert(adj)
+                        self.visited_list.append(adj)
+                        adj_list.insert(adj)   
                 
             if adj_list.valors[0] != None:
                 self.actual = adj_list.valors[0].square
-    
+
+            else:
+                ordered = OrderedVector(len(self.visited_list))
+                for adj in self.visited_list:
+                    x = 0
+                    for a in adj.square.adjacents:
+                        if a.square.visited == False and a.square.is_wall == False:
+                            x+=1
+                    if x > 0:
+                        ordered.insert(adj)
+                    
+                if ordered.valors[0] != None:
+                    self.actual = ordered.valors[0].square
+                    print("baixo")
+
             
