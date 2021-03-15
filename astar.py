@@ -3,11 +3,13 @@ import pygame
 
 class AStar:
     def __init__(self,actual,objective):
+        self.origin = actual
         self.objective = objective
         self.found = False
         self.actual = actual
         self.visited_list = []
-        self.prev = objective
+        self.path = []
+        self.entered = False
 
     def seach(self):
         print(self.actual.objective_distance)
@@ -46,4 +48,24 @@ class AStar:
                     self.actual = ordered.valors[0].square
                     print("baixo")
 
+    def seach_back(self):
+        print(self.actual.objective_distance)
+        self.path.append(self.actual)
+        
+        adj_list = OrderedVector(len(self.actual.adjacents))
+        
+    
+        for adj in self.actual.adjacents:
+            if adj.square.visited:
+                adj_list.insert(adj)  
+
+        if adj_list.valors[0] != None:
+            self.actual = adj_list.valors[0].square
+
+
+    def return_origin(self):
+        
+        if not self.entered:
+            self.objective = self.origin
+            self.entered = True
             

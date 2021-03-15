@@ -7,6 +7,8 @@ from astar import AStar
 
 pygame.init()
 
+flag = True
+
 WINDOW_SIZE = (640,480)
 BLOCK_SIZE = 20
 
@@ -23,6 +25,9 @@ grid_list = numpy.empty(shape=[24,32],dtype=object)
 
 w = WINDOW_SIZE[0]//len(grid_list[0])
 h = WINDOW_SIZE[1]//len(grid_list)
+
+objective = None
+origin = None
 
 def click_wall(pos,state):
     i = pos[1]//w
@@ -54,13 +59,13 @@ def gen_rects():
 def set_pos(x,y):
     return (x*BLOCK_SIZE,y* BLOCK_SIZE)
 
-def get_objective_distance(actual,objective):
-    return math.sqrt(((objective[0] - actual[0]))**2 + abs((objective[1] - actual[1]))**2)
+def get_objective_distance(actual):
+    return math.sqrt(((objective.rect.x - actual[0]))**2 + abs((objective.rect.y - actual[1]))**2)
 
 def gen_objective_distance():
     for line in grid_list:
         for sqr in line:
-            sqr.objective_distance = get_objective_distance((sqr.rect.x,sqr.rect.y),(objective.rect.x,objective.rect.y))
+            sqr.objective_distance = get_objective_distance((sqr.rect.x,sqr.rect.y))
 
 def gen_adjacents():
     i=0
@@ -79,9 +84,20 @@ def gen_adjacents():
         i+=1
 
 
+def back(vel,astar):
+    global flag,objective,flag
+    if flag:
+        flag = False
+        vel = 10
+        astar.return_origin()
+        origin = astar.actual
+        objective = astar.objective
+        gen_objective_distance()
+        
+
 def main():
 
-    global window,origin,objective,astar
+    global window,origin,astar,objective
     window = pygame.display.set_mode(WINDOW_SIZE)
     pygame.display.set_caption("A* Pathfinding")
 
@@ -91,11 +107,10 @@ def main():
     origin = grid_list[3][5]
     objective = grid_list[12][28]
 
-    gen_objective_distance()
-    gen_adjacents()
-    
     astar = AStar(origin,objective)
 
+    gen_objective_distance()
+    gen_adjacents()
     
 
     loop = True
@@ -104,7 +119,7 @@ def main():
     vel = 30
     while loop:
         window.fill(WHITE)
-
+        
         #events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -127,12 +142,19 @@ def main():
 
         if start:
             vel = 5
-            if astar.found == False:
+            if not astar.found:
                 astar.seach()
 
         pygame.draw.rect(window,RED,objective.rect)
         pygame.draw.rect(window,GREEN,origin.rect)
         draw_grid()
+
+        # if astar.found:
+        #     back(vel,astar)
+        #     astar.seach_back()
+        #     for sqr in astar.path:
+        #         pygame.draw.rect(window,BLUE,sqr.rect)
+
         
         pygame.display.update()
         fps.tick(vel)
